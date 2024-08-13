@@ -2,4 +2,5 @@ venv/
 .env
 __pycache__/
 test1.py
+test.py
 stackoverflow_full.csv
