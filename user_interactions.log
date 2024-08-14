@@ -1,0 +1,4 @@
+INFO:sentence_transformers.SentenceTransformer:Use pytorch device_name: cpu
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO:root:User searched for: looking for python developer with 2 years experience
+INFO:root:User searched for: looking for python developer with 2 years experience
