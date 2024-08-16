@@ -3,4 +3,6 @@ venv/
 __pycache__/
 test1.py
 test.py
+backup.py
+backup1.py
 stackoverflow_full.csv
