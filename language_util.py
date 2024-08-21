@@ -60,7 +60,6 @@ def extract_language(response):
         "vietnamese": "Vietnamese"
     }
     
-    # Convert response to lowercase and strip any leading/trailing spaces
     language = response.strip().split('.')[0].lower()
     
     # Iterate over the language map to find a match
@@ -68,5 +67,9 @@ def extract_language(response):
         if key in language:
             return name
     
-    # If no match is found, return the original input capitalized
+    # If no match is found, return a label indicating unknown or no artist found
+    if "unknown" in language or "no information available" in language or "not found" in language:
+        return "No Artist Found"
+    
+    # If no language match is found, return the original input capitalized
     return language.capitalize()

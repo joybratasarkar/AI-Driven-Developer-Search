@@ -2,6 +2,10 @@ import requests
 from langchain.tools import Tool
 from langchain.agents import initialize_agent, AgentType
 from langchain.llms import OpenAI
+from langchain_openai import ChatOpenAI
+import os
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Function to search DuckDuckGo
 def search_duckduckgo(query):
@@ -21,7 +25,7 @@ duckduckgo_tool = Tool(
 )
 
 # Initialize an LLM (e.g., OpenAI GPT)
-llm = OpenAI()
+llm = ChatOpenAI(temperature=0.5, model_name="gpt-4o")
 
 # Initialize the agent with the DuckDuckGo tool
 agent = initialize_agent(
@@ -32,5 +36,8 @@ agent = initialize_agent(
 )
 
 # Ask the agent a question
-response = agent.run("How do you implement error handling in a Node.js application?")
+try:
+    response = agent.invoke("Search for the total amount of funds raised or seed funding received by Supersourcing in recent news or financial reports. Include details about any investment rounds or funding announcements from 2023 onwards.")
+except Exception as e:
+    print(f"An error occurred: {e}")
 print(response)

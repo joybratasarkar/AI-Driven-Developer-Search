@@ -1,0 +1,159 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+form input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    width: 60%;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.profile-card {
+    display: flex;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card .profile-initials {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    font-size: 28px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.profile-card .profile-info {
+    flex-grow: 1;
+}
+
+.profile-card h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.profile-card p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.profile-card .location,
+.profile-card .experience {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #007bff;
+}
+
+.profile-card .skills {
+    margin-top: 10px;
+}
+
+.profile-card .skills span {
+    display: inline-block;
+    background-color: #eef3f8;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.profile-card .actions {
+    display: flex;
+    align-items: center;
+}
+
+.profile-card .btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.profile-card .btn:hover {
+    background-color: #0056b3;
+}
+
+.profile-card .archive {
+    background-color: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.profile-card .archive:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+@media screen and (max-width: 768px) {
+    .profile-card {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-card .profile-initials {
+        margin-bottom: 15px;
+    }
+
+    .profile-card .profile-info {
+        text-align: center;
+    }
+
+    .profile-card .actions {
+        justify-content: center;
+        margin-top: 15px;
+    }
+}

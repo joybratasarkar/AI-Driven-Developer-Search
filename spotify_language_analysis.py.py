@@ -44,7 +44,6 @@ def preprocess_text_advanced(text):
     text = re.sub(r'[\u2600-\u26FF\u2700-\u27BF]', '', text)  # Remove emojis and symbols
     return text.strip()
 
-# Function to detect language using OpenAI via LangChain with caching
 @lru_cache(maxsize=1000)
 def detect_language_openai(track_name, artist_name):
     prompt_template = PromptTemplate(
@@ -57,6 +56,11 @@ def detect_language_openai(track_name, artist_name):
     
     # Clean and extract the language using the utility function
     language = extract_language(response)
+    
+    # Categorize as "No Language" if language is unknown or not found
+    if language.lower() in ["unknown", "no information available", "not found", "unspecified"]:
+        language = "No Language"
+    
     return language
 
 # Asynchronous function to retrieve playlist tracks
@@ -78,14 +82,14 @@ def group_tracks_by_language(tracks, detect_language_func):
         language = detect_language_func(track_name, artist_name)
         if language:
             return language, track
-        return None, None
+        return "No Language", track
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() * 2) as executor:
         futures = [executor.submit(process_track, track) for track in tracks]
         for future in concurrent.futures.as_completed(futures):
             try:
                 language, track = future.result()
-                if language and track:
+                if track:  # Add to "No Language" if track processing fails
                     grouped_tracks[language].append(track)
             except Exception as e:
                 print(f"Error processing track: {e}")
@@ -137,7 +141,7 @@ async def main(playlist_id):
     plot_language_distribution(language_count)
 
 # Replace with your correct playlist ID
-playlist_id = '37i9dQZF1EVKuMoAJjoTIw'
+playlist_id = '37i9dQZF1E4DdRMhQtk5hk'
 
 # Run the async main function
 asyncio.run(main(playlist_id))
