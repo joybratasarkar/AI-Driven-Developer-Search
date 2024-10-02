@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interviewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        #container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        #answer {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+        }
+        #submit-btn {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            display: inline-block;
+        }
+        #submit-btn:disabled {
+            background-color: #999;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: green;
+        }
+        #resume {
+            margin-bottom: 10px;
+        }
+        #upload-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>AI Interviewer</h1>
+        <input type="file" id="resume" accept=".pdf"/><br><br>
+        <button id="upload-btn">Upload Resume</button>
+        <div id="question-container">
+            <div class="question">Please upload your resume to start the interview.</div>
+        </div>
+        <textarea id="answer" placeholder="Type your answer here..." disabled></textarea><br>
+        <button id="submit-btn" disabled>Submit Answer</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        let socket = new WebSocket("ws://127.0.0.1:8000/ws");
+        let questionContainer = document.getElementById('question-container');
+        let answerInput = document.getElementById('answer');
+        let submitButton = document.getElementById('submit-btn');
+        let messageDiv = document.getElementById('message');
+        let uploadButton = document.getElementById('upload-btn');
+        let resumeInput = document.getElementById('resume');
+
+        // Function to upload resume via API
+        async function uploadResume() {
+            const file = resumeInput.files[0];
+            if (!file) {
+                alert("Please select a PDF resume to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                let response = await fetch("http://localhost:8000/upload_resume/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to upload resume.");
+                }
+
+                let data = await response.json();
+                console.log(data);
+
+                // Send the start interview message after uploading resume
+                socket.send("UPLOAD_RESUME");
+            } catch (error) {
+                console.error("Error uploading resume:", error);
+                alert("Failed to upload resume. Please try again.");
+            }
+        }
+
+        // WebSocket message received
+        socket.onmessage = function(event) {
+            let data = JSON.parse(event.data);
+            if (data.question) {
+                questionContainer.innerHTML = `<div class="question">${data.question}</div>`;
+                submitButton.disabled = false;
+                answerInput.disabled = false;
+                answerInput.value = '';
+            } else if (data.message) {
+                messageDiv.innerHTML = `<p>${data.message}</p>`;
+                submitButton.disabled = true;
+                answerInput.disabled = true;
+            }
+        };
+
+        // WebSocket connection closed
+        socket.onclose = function(event) {
+            console.log("WebSocket connection closed");
+        };
+
+        // Submit answer
+        submitButton.addEventListener('click', function() {
+            let answer = answerInput.value.trim();
+            if (answer !== "") {
+                socket.send(`ANSWER:${answer}`);
+                submitButton.disabled = true;
+                answerInput.disabled = true;
+            }
+        });
+
+        // Handle resume upload button
+        uploadButton.addEventListener('click', function() {
+            uploadResume();
+        });
+    </script>
+</body>
+</html>

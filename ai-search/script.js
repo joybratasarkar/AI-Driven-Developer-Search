@@ -4,7 +4,7 @@ document.getElementById('search-form').addEventListener('submit', async (event) 
     const query = document.getElementById('query').value;
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/search', {
+        const response = await fetch('http://127.0.0.1:7000/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -30,7 +30,7 @@ function displayResults(result) {
     if (result.top_profiles) {
         result.top_profiles.forEach(profile => {
             const initials = getInitials(profile.name);
-
+            console.log('profile',profile);
             const profileCard = `
                 <div class="profile-card">
                     <div class="profile-initials">${initials}</div>
@@ -39,7 +39,6 @@ function displayResults(result) {
                         <p>Skills: ${profile.skills.join(', ')}</p>
                         <p>Experience: ${profile.experience} years</p>
                         <p>Location: ${profile.location}</p>
-                        <p>Job Title: ${profile.job_title}</p>
                         <p>Cosine Similarity Score: ${profile.cosine_similarity_score}</p>
                         <div class="skills">
                             ${profile.skills.map(skill => `<span>${skill}</span>`).join('')}

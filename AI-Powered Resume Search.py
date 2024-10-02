@@ -75,8 +75,8 @@ def search_resume(query, top_k=5):
     return results
 
 # Example query
-query = "machine learning with experience in Python and Machine Learning"
-results = search_resume(query)
+query = "machine learning with web  skill  should be in Python and javascript with 5 years of experience category engineering"
+results = search_resume(query) 
 
 # Print the results
 for i, result in enumerate(results):
