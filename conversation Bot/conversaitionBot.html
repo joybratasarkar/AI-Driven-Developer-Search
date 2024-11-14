@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
             background-color: #f4f4f4;
             padding: 20px;
         }
+
         #container {
             max-width: 600px;
             margin: 0 auto;
@@ -17,20 +19,25 @@
             padding: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         h1 {
             text-align: center;
             color: #333;
         }
+
         .question {
             margin-bottom: 20px;
             font-size: 1.2em;
             font-weight: bold;
         }
+
         #answer {
             width: 100%;
             padding: 10px;
             font-size: 1em;
+            margin-bottom: 10px;
         }
+
         #submit-btn {
             padding: 10px 20px;
             background-color: #007BFF;
@@ -40,17 +47,21 @@
             cursor: pointer;
             display: inline-block;
         }
+
         #submit-btn:disabled {
             background-color: #999;
         }
+
         #message {
             margin-top: 20px;
             font-size: 1.2em;
             color: green;
         }
+
         #resume {
             margin-bottom: 10px;
         }
+
         #upload-btn {
             padding: 10px 20px;
             background-color: #28a745;
@@ -58,12 +69,17 @@
             border: none;
             cursor: pointer;
         }
+
+        #upload-btn:disabled {
+            background-color: #999;
+        }
     </style>
 </head>
+
 <body>
     <div id="container">
         <h1>AI Interviewer</h1>
-        <input type="file" id="resume" accept=".pdf"/><br><br>
+        <input type="file" id="resume" accept=".pdf" /><br><br>
         <button id="upload-btn">Upload Resume</button>
         <div id="question-container">
             <div class="question">Please upload your resume to start the interview.</div>
@@ -82,36 +98,36 @@
         let uploadButton = document.getElementById('upload-btn');
         let resumeInput = document.getElementById('resume');
 
-        // Function to upload resume via API
-        async function uploadResume() {
+        // Disable upload button and inputs if WebSocket is not connected
+        socket.onopen = function() {
+            uploadButton.disabled = false;
+        };
+
+        socket.onerror = function(error) {
+            alert("WebSocket connection failed. Please make sure the backend is running.");
+        };
+
+        // Function to upload resume via WebSocket
+        function uploadResume() {
             const file = resumeInput.files[0];
             if (!file) {
                 alert("Please select a PDF resume to upload.");
                 return;
             }
 
-            const formData = new FormData();
-            formData.append("file", file);
+            // Create a FileReader to read the resume file as binary data
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = e.target.result;
 
-            try {
-                let response = await fetch("http://localhost:8000/upload_resume/", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to upload resume.");
-                }
-
-                let data = await response.json();
-                console.log(data);
-
-                // Send the start interview message after uploading resume
+                // Send resume data via WebSocket
                 socket.send("UPLOAD_RESUME");
-            } catch (error) {
-                console.error("Error uploading resume:", error);
-                alert("Failed to upload resume. Please try again.");
-            }
+                socket.send(fileData);
+                uploadButton.disabled = true;
+                messageDiv.innerHTML = `<p>Resume uploaded. Waiting for questions...</p>`;
+            };
+
+            reader.readAsArrayBuffer(file);
         }
 
         // WebSocket message received
@@ -129,11 +145,6 @@
             }
         };
 
-        // WebSocket connection closed
-        socket.onclose = function(event) {
-            console.log("WebSocket connection closed");
-        };
-
         // Submit answer
         submitButton.addEventListener('click', function() {
             let answer = answerInput.value.trim();
@@ -148,6 +159,12 @@
         uploadButton.addEventListener('click', function() {
             uploadResume();
         });
+
+        // Close the WebSocket connection if the user leaves the page
+        window.onbeforeunload = function() {
+            socket.close();
+        };
     </script>
 </body>
+
 </html>
